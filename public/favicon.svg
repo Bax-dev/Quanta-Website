@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-6 -3 612 612">
+  <mask id="m"><rect x="-10" y="-10" width="640" height="640" fill="#fff"/><polygon points="300,301 620,593 620,636 300,322"/></mask>
+  <g fill="#620000">
+    <path mask="url(#m)" fill-rule="evenodd" d="M-2 305a302 302 0 1 0 604 0a302 302 0 1 0 -604 0zM110 305a190 190 0 1 0 380 0a190 190 0 1 0 -380 0z"/>
+    <polygon mask="url(#m)" points="347,344 505,395 520,440 470,456"/>
+    <polygon points="427,447 590,607 440,556"/>
+  </g>
+</svg>
