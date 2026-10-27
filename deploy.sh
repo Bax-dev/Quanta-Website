@@ -8,7 +8,7 @@ DIST_ID="${DIST_ID:?set DIST_ID to the CloudFront distribution id}"
 # Absolute origin for canonical URLs, og:image and sitemap.xml, e.g. https://example.com
 export SITE_URL="${SITE_URL:-https://quantatechnologies.org}"
 
-yarn build
+npm run build
 # CloudFront asks S3 for "/services", not "/services/index.html", so each route's
 # prerendered page is also published under its extensionless key.
 routes=""

@@ -2,6 +2,8 @@
 // (static per-route HTML, sitemap.xml and robots.txt). Keep this file free of
 // browser APIs and the '@' alias so the build can import it.
 
+import { faqs } from './faqs';
+
 export const site = {
   name: 'Quanta',
   legalName: 'Quantum Transformation Tech LLC',
@@ -9,13 +11,21 @@ export const site = {
   /** Production origin; SITE_URL overrides it at build time. */
   url: 'https://quantatechnologies.org',
   email: 'support@quantatechnologies.org',
+  address: {
+    street: '1002 Coleridge Ct, Apt G',
+    city: 'Baltimore',
+    region: 'MD',
+    postalCode: '21229',
+    country: 'US',
+  },
   locale: 'en_GB',
-  themeColor: '#690b0b',
+  themeColor: '#0a0a0a',
   logo: '/android-chrome-512x512.png',
   image: '/og-image.jpg',
-  imageAlt: 'Quanta: Built for the Future',
+  imageAlt: 'Quanta: AWS cloud, engineered for regulated work',
   imageWidth: 1200,
   imageHeight: 630,
+  imageType: 'image/jpeg',
 };
 
 export type PageMeta = {
@@ -32,15 +42,15 @@ export const pages: PageMeta[] = [
   {
     path: '/',
     label: 'Home',
-    title: 'Quanta | AWS Partner for Cloud Migration, Security & Managed Services',
-    description: 'Quanta helps ambitious organisations modernise their cloud foundations with expert AWS engineering: cloud strategy, migration, security and managed cloud operations.',
+    title: 'Quanta | AWS Migration, Security & Managed Cloud',
+    description: 'Quanta designs, migrates and runs AWS platforms for financial services, healthcare, public sector and energy teams. The engineers who design your platform build it.',
     priority: 1,
     changefreq: 'weekly',
   },
   {
     path: '/services',
     label: 'Services',
-    title: 'AWS Cloud Services: Strategy, Migration, Security & Operations | Quanta',
+    title: 'AWS Cloud Services: Migration, Security & Operations | Quanta',
     description: 'One engineering practice across the cloud lifecycle: AWS cloud strategy and landing zones, migration and modernisation, security and resilience, and managed cloud operations.',
     priority: 0.9,
     changefreq: 'monthly',
@@ -48,7 +58,7 @@ export const pages: PageMeta[] = [
   {
     path: '/industries',
     label: 'Industries',
-    title: 'Cloud Engineering for Finance, Healthcare, Public Sector & Energy | Quanta',
+    title: 'AWS for Finance, Healthcare, Public Sector & Energy | Quanta',
     description: 'Secure, compliant AWS platforms for financial services, healthcare, public sector and energy. One engineering discipline, adapted to the regulation and risk of your sector.',
     priority: 0.8,
     changefreq: 'monthly',
@@ -73,14 +83,14 @@ export const pages: PageMeta[] = [
     path: '/about',
     label: 'About',
     title: 'About Quanta | Engineering-Led AWS Cloud Partner',
-    description: 'Quanta is an engineering-led cloud partner for organisations ready to make infrastructure a source of momentum, not friction. Meet the team and the way we think.',
+    description: 'Quanta is an engineering-led AWS partner based in Baltimore, MD. Senior engineers design, build and run cloud platforms for regulated organisations.',
     priority: 0.7,
     changefreq: 'monthly',
   },
   {
     path: '/insights',
     label: 'Insights',
-    title: 'Cloud Insights: Architecture, Security & Migration | Quanta',
+    title: 'Cloud Insights: AWS Architecture & Security | Quanta',
     description: 'Practical perspectives on the questions that shape cloud decisions, from AWS architecture and security to migration, modernisation and running platforms well.',
     priority: 0.6,
     changefreq: 'weekly',
@@ -97,7 +107,7 @@ export const pages: PageMeta[] = [
     path: '/contact',
     label: 'Contact',
     title: 'Contact Quanta | Talk to an AWS Cloud Expert',
-    description: 'Start a conversation with Quanta about cloud strategy, AWS migration, security or managed services. Bring the messy version; no finished brief needed.',
+    description: 'Talk to Quanta about AWS cloud strategy, migration, security or managed operations. Tell us what you are facing; a senior engineer reads every enquiry.',
     priority: 0.8,
     changefreq: 'yearly',
   },
@@ -131,6 +141,14 @@ export function structuredData(page: PageMeta, origin: string) {
       image: abs(origin, site.image),
       description: pages[0].description,
       email: site.email,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: site.address.street,
+        addressLocality: site.address.city,
+        addressRegion: site.address.region,
+        postalCode: site.address.postalCode,
+        addressCountry: site.address.country,
+      },
       contactPoint: {
         '@type': 'ContactPoint',
         contactType: 'customer support',
@@ -165,16 +183,27 @@ export function structuredData(page: PageMeta, origin: string) {
       isPartOf: { '@id': abs(origin, '/#website') },
       about: { '@id': org },
       primaryImageOfPage: abs(origin, site.image),
+      ...(page.path !== '/' && { breadcrumb: { '@id': url + '#breadcrumb' } }),
       inLanguage: 'en-GB',
     },
   ];
   if (page.path !== '/') {
     graph.push({
       '@type': 'BreadcrumbList',
+      '@id': url + '#breadcrumb',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: abs(origin, '/') },
         { '@type': 'ListItem', position: 2, name: page.label, item: url },
       ],
+    });
+  }
+  const questions = faqs[page.path];
+  if (questions) {
+    graph.push({
+      '@type': 'FAQPage',
+      '@id': url + '#faq',
+      isPartOf: { '@id': url + '#webpage' },
+      mainEntity: questions.map(([name, text]) => ({ '@type': 'Question', name, acceptedAnswer: { '@type': 'Answer', text } })),
     });
   }
   return { '@context': 'https://schema.org', '@graph': graph };
@@ -202,6 +231,7 @@ export function renderHead(page: PageMeta | undefined, origin?: string) {
     `<meta property="og:description" content="${esc(meta.description)}" />`,
     url && `<meta property="og:url" content="${url}" />`,
     image && `<meta property="og:image" content="${image}" />`,
+    image && `<meta property="og:image:type" content="${site.imageType}" />`,
     image && `<meta property="og:image:width" content="${site.imageWidth}" />`,
     image && `<meta property="og:image:height" content="${site.imageHeight}" />`,
     image && `<meta property="og:image:alt" content="${esc(site.imageAlt)}" />`,
@@ -222,7 +252,7 @@ export function renderHead(page: PageMeta | undefined, origin?: string) {
  */
 export function renderBody(page: PageMeta | undefined) {
   const meta = page ?? notFound;
-  const heading = page ? (page.path === '/' ? `${site.name}: ${site.tagline}` : page.label) : 'Page not found';
+  const heading = page ? (page.path === '/' ? 'AWS cloud, engineered for regulated work' : page.label) : 'Page not found';
   const nav = pages.map((p) => `<li><a href="${p.path}">${esc(p.label)}</a></li>`).join('');
   return `<div class="seo-fallback"><h1>${esc(heading)}</h1><p>${esc(meta.description)}</p><nav aria-label="Pages"><ul>${nav}</ul></nav><p><a href="mailto:${site.email}">${site.email}</a></p></div>`;
 }
