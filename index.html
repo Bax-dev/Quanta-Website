@@ -8,6 +8,11 @@
     <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="theme-color" content="#0a0a0a" />
+    <style>
+      /* Paint the dark page and hide the crawler-only markup before the stylesheet arrives. */
+      html, body { margin: 0; background: #0a0a0a; color: #fafafa; }
+      .seo-fallback { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    </style>
     <meta name="application-name" content="Quanta" />
     <meta name="apple-mobile-web-app-title" content="Quanta" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
